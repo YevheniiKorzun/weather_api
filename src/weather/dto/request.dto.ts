@@ -1,4 +1,4 @@
-import {IsNumber, IsNumberString} from "class-validator";
+import { IsNumber, IsNumberString } from 'class-validator';
 
 export class WeatherRequestBodyDto {
   @IsNumber()

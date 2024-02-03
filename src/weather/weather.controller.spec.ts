@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WeatherController } from './weather.controller';
+import { HttpModule } from '@nestjs/axios';
+import { WeatherService } from './weather.service';
 
 describe('WeatherController', () => {
   let controller: WeatherController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule],
       controllers: [WeatherController],
+      providers: [WeatherService],
     }).compile();
 
     controller = module.get<WeatherController>(WeatherController);

@@ -1,19 +1,19 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {OpenWeatherMapResponse} from "../../weather/dto/response.dto";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { OpenWeatherMapResponse } from '../../weather/dto/response.dto';
 
 @Entity('weather')
 export class WeatherEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ type: "int" })
+  @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ type: "numeric" })
+  @Column({ type: 'numeric' })
   lat: number;
 
-  @Column({ type: "numeric" })
+  @Column({ type: 'numeric' })
   lon: number;
 
   @Column({
-    type: "json",
+    type: 'json',
     nullable: true,
     transformer: {
       to(value: OpenWeatherMapResponse): string {
