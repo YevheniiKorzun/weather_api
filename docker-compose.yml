@@ -1,0 +1,25 @@
+version: '3'
+services:
+#  web:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "3001:3001"
+#    environment:
+#      POSTGRES_USER: ${DB_USER}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#      POSTGRES_DB: ${DB_NAME}
+#    depends_on:
+#      - postgres
+#    container_name: weather_api
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    container_name: weather_db

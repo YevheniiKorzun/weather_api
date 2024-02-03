@@ -1,5 +1,8 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Get, Post, Query, UseInterceptors, ValidationPipe} from '@nestjs/common';
 import {WeatherService} from "./weather.service";
+import {WeatherInterceptor} from "./interceptors/weather.interceptor";
+import {WeatherRequestBodyDto, WeatherRequestQueryDto} from "./dto/request.dto";
+import {WeatherResponseDto} from "./dto/response.dto";
 
 @Controller('weather')
 export class WeatherController {
@@ -7,12 +10,13 @@ export class WeatherController {
   }
 
   @Post()
-  putDataToDB(@Body() body) {
-    return this.weatherService.fetchData(body);
+  postWeatherData(@Body(ValidationPipe) body: WeatherRequestBodyDto): Promise<WeatherResponseDto> {
+    return this.weatherService.postWeatherData(body);
   }
 
+  @UseInterceptors(WeatherInterceptor)
   @Get()
-  getData() {
-    return this.weatherService.getData();
+  getWeatherData(@Query(ValidationPipe) query: WeatherRequestQueryDto): Promise<WeatherResponseDto> {
+    return this.weatherService.getWeatherData(query);
   }
 }
