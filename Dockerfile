@@ -10,4 +10,4 @@ COPY . .
 
 CMD ["npm", "run", "start"]
 
-CMD ["npm", "run", "migration", "run"]
+CMD ["npm", "run", "migration:run"]
