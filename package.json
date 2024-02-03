@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "env": "touch .env && cp .env.dev .env",
+    "docker": "docker compose up -d",
+    "bootstrap": "npm install && npm run env && npm run docker",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
