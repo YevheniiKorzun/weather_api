@@ -1,23 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {HttpService} from "@nestjs/axios";
-import {map} from "rxjs";
+import {WeatherEntity} from "../db/entities/weather.entity";
+import {NotFoundError} from "rxjs";
+import {plainToInstance} from "class-transformer";
+import {OpenWeatherMapResponse, WeatherResponseDto} from "./dto/response.dto";
+import {WeatherRequestBodyDto, WeatherRequestQueryDto} from "./dto/request.dto";
+import {AxiosResponse} from "axios";
 
 @Injectable()
 export class WeatherService {
   constructor(private readonly httpService: HttpService) {}
 
-  async fetchData(body) {
+  async fetchData(body: WeatherRequestBodyDto): Promise<AxiosResponse<OpenWeatherMapResponse>> {
     const { lat, lon } = body;
-    const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather?';
-    const API_KEY = '34dd2082a4e34fd22a3d30aa89131cb9';
+    const BASE_URL = process.env.BASE_URL;
+    const API_KEY = process.env.API_KEY;
     const URL = `${BASE_URL}lat=${lat}&lon=${lon}&appid=${API_KEY}`;
 
-    const data = await this.httpService.get(URL).pipe(map(res => res.data));
-
-    return data;
+    return this.httpService.axiosRef.get(URL).then(res => res.data);
   }
 
-  getData() {
-    return this.httpService.get('https://api.publicapis.org/entries').pipe(map(res => res.data));
+  async postWeatherData(body: WeatherRequestBodyDto): Promise<WeatherResponseDto> {
+    try {
+      const weatherData = await this.fetchData(body);
+      const weatherFromDb = await WeatherEntity.findOneBy(body);
+      const { lat, lon } = body;
+
+      if (!weatherFromDb) {
+        const weather = new WeatherEntity();
+
+        weather.lat = lat;
+        weather.lon = lon;
+        weather.data = JSON.parse(JSON.stringify(weatherData));
+
+        await WeatherEntity.save(weather);
+
+        return plainToInstance(WeatherResponseDto, weather);
+      }
+
+      weatherFromDb.data = JSON.parse(JSON.stringify(weatherData));
+
+      await WeatherEntity.save(weatherFromDb);
+
+      return plainToInstance(WeatherResponseDto, weatherFromDb);
+    } catch (err) {
+      throw new HttpException(err.message, err.status);
+    }
+  }
+
+  async getWeatherData(query: WeatherRequestQueryDto): Promise<WeatherResponseDto> {
+    try {
+      const weather = await WeatherEntity.findOneBy(query);
+
+      if (!weather) {
+        throw new NotFoundError('No data');
+      }
+
+      return plainToInstance(WeatherResponseDto, weather);
+    } catch (err) {
+      throw new HttpException(err.message, err.status);
+    }
   }
 }
