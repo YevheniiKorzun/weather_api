@@ -2,3 +2,7 @@
 .eslintrc.js
 .prettierrc
 README.md
+.Dockerfile
+.env.dev
+node_modules
+idea

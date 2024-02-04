@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "start"]
+RUN chmod +x wait-for-it.sh
 
-CMD ["npm", "run", "migration:run"]
+CMD ["./wait-for-it.sh", "postgres:5432", "--", "npm", "run", "start"]
